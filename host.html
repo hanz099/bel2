@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HOST BEL CCA</title>
+<style>
+body { font-family: Arial; background:#020617; color:white; text-align:center }
+input,button { font-size:20px; padding:10px; margin:5px }
+#log { font-size:28px; margin-top:20px }
+</style>
+</head>
+<body>
+
+<h1>HOST / JURI</h1>
+
+<button onclick="reset()">RESET</button>
+
+<h2>Kode Masuk Peserta</h2>
+<input id="kode" placeholder="contoh: A1">
+<button onclick="terima()">TERIMA</button>
+
+<div id="log">SIAP</div>
+
+<script>
+function terima(){
+  const k = document.getElementById("kode").value;
+  if(!k) return;
+  document.getElementById("log").innerText =
+    "BEL DITEKAN: " + k;
+}
+
+function reset(){
+  document.getElementById("log").innerText = "SIAP";
+  document.getElementById("kode").value = "";
+}
+</script>
+
+</body>
+</html>
