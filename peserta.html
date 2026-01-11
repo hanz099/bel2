@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PESERTA BEL</title>
+<style>
+body { font-family: Arial; background:#0f172a; color:white; text-align:center }
+input,button { font-size:26px; padding:15px; margin:10px }
+</style>
+</head>
+<body>
+
+<h1>PESERTA</h1>
+
+<input id="kode" placeholder="Kode Tim (A1, B2)">
+<br>
+<button onclick="bel()">TEKAN BEL</button>
+
+<h2 id="info"></h2>
+
+<script>
+let terkunci=false;
+
+function bel(){
+  if(terkunci) return;
+  terkunci=true;
+  const k=document.getElementById("kode").value || "TANPA KODE";
+  document.getElementById("info").innerText =
+    "KIRIM KE HOST: " + k;
+}
+</script>
+
+</body>
+</html>
