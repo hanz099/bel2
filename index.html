@@ -5,48 +5,32 @@
 <title>Bel CCA</title>
 
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: white;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-  }
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
 
-  h1 { font-size: 36px; }
-  h2 { margin-top: 10px; }
+button {
+  font-size: 20px;
+  padding: 15px;
+  margin: 8px;
+  width: 200px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
 
-  select, input {
-    padding: 8px;
-    margin: 5px;
-    font-size: 16px;
-  }
-
-  button {
-    font-size: 22px;
-    padding: 20px;
-    margin: 10px;
-    width: 220px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-
-  .tim-btn { background: #22c55e; color: black; }
-  .lock { opacity: 0.4; pointer-events: none; }
-
-  #tombol {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    justify-items: center;
-    margin-top: 20px;
-  }
-
-  .control {
-    margin-bottom: 15px;
-  }
+.tim-btn { background: #22c55e; color: black; }
+#tombol {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  justify-items: center;
+  margin-top: 20px;
+}
 </style>
 </head>
 
@@ -54,21 +38,21 @@
 
 <h1>🔔 BEL CCA</h1>
 
-<div class="control">
-  <label>Jumlah Tim:</label>
-  <select id="jumlah">
-    <option value="2">2 Tim</option>
-    <option value="3">3 Tim</option>
-    <option value="4">4 Tim</option>
-  </select>
-</div>
+<label>Jumlah Tim:</label>
+<select id="jumlah">
+  <option value="2">2 Tim</option>
+  <option value="3">3 Tim</option>
+  <option value="4">4 Tim</option>
+</select>
 
-<div class="control">
-  <input id="t1" placeholder="Tim A">
-  <input id="t2" placeholder="Tim B">
-  <input id="t3" placeholder="Tim C">
-  <input id="t4" placeholder="Tim D">
-</div>
+<br><br>
+
+<input id="t1" placeholder="Tim A">
+<input id="t2" placeholder="Tim B">
+<input id="t3" placeholder="Tim C">
+<input id="t4" placeholder="Tim D">
+
+<br><br>
 
 <button onclick="mulai()">MULAI</button>
 <button onclick="fullscreen()">FULLSCREEN</button>
@@ -76,7 +60,6 @@
 <hr>
 
 <h2 id="status">SIAP</h2>
-
 <div id="tombol"></div>
 
 <br>
@@ -86,58 +69,94 @@
   <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">
 </audio>
 
-<script>
-let terkunci = false;
+<!-- 🔥 SCRIPT FIREBASE + LOGIC (SATU SCRIPT SAJA) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-function mulai() {
-  terkunci = false;
-  document.getElementById("status").innerText = "SIAP";
+const firebaseConfig = {
+  apiKey: "ISI_PUNYAMU",
+  authDomain: "ISI_PUNYAMU",
+  databaseURL: "https://bel1-a22de-default-rtdb.firebaseio.com",
+  projectId: "ISI_PUNYAMU",
+  storageBucket: "ISI_PUNYAMU",
+  messagingSenderId: "ISI_PUNYAMU",
+  appId: "ISI_PUNYAMU"
+};
 
-  const jml = Number(document.getElementById("jumlah").value);
-  const namaTim = [
-    document.getElementById("t1").value || "Tim A",
-    document.getElementById("t2").value || "Tim B",
-    document.getElementById("t3").value || "Tim C",
-    document.getElementById("t4").value || "Tim D"
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const belRef = ref(db, "bel");
+
+// ambil element SEKALI
+const jumlah = document.getElementById("jumlah");
+const t1 = document.getElementById("t1");
+const t2 = document.getElementById("t2");
+const t3 = document.getElementById("t3");
+const t4 = document.getElementById("t4");
+const tombol = document.getElementById("tombol");
+const status = document.getElementById("status");
+const sound = document.getElementById("sound");
+
+// ===== MULAI =====
+window.mulai = function () {
+  const jml = Number(jumlah.value);
+  const nama = [
+    t1.value || "Tim A",
+    t2.value || "Tim B",
+    t3.value || "Tim C",
+    t4.value || "Tim D"
   ];
 
-  const area = document.getElementById("tombol");
-  area.innerHTML = "";
+  tombol.innerHTML = "";
+  status.innerText = "SIAP";
 
   for (let i = 0; i < jml; i++) {
-    const btn = document.createElement("button");
-    btn.className = "tim-btn";
-    btn.innerText = namaTim[i];
-    btn.onclick = () => tekan(namaTim[i], btn);
-    area.appendChild(btn);
+    const b = document.createElement("button");
+    b.className = "tim-btn";
+    b.innerText = nama[i];
+    b.onclick = () => tekan(nama[i]);
+    tombol.appendChild(b);
   }
-}
 
-function tekan(nama, btn) {
-  if (terkunci) return;
-  terkunci = true;
+  set(belRef, { status: "siap" });
+};
 
-  document.getElementById("sound").play();
-  document.getElementById("status").innerText =
-    nama + " MENEKAN BEL";
+// ===== TEKAN BEL =====
+window.tekan = function (nama) {
+  set(belRef, {
+    status: "terkunci",
+    pemenang: nama,
+    waktu: Date.now()
+  });
+};
 
-  document.querySelectorAll(".tim-btn")
-    .forEach(b => {
-      if (b !== btn) b.classList.add("lock");
-    });
-}
+// ===== REALTIME =====
+onValue(belRef, snap => {
+  if (!snap.exists()) return;
+  const d = snap.val();
 
-function resetBel() {
-  terkunci = false;
-  document.getElementById("status").innerText = "SIAP";
-  document.querySelectorAll(".tim-btn")
-    .forEach(b => b.classList.remove("lock"));
-}
+  if (d.status === "terkunci") {
+    status.innerText = d.pemenang + " MENEKAN BEL";
+    sound.play();
+  }
 
-function fullscreen() {
+  if (d.status === "siap") {
+    status.innerText = "SIAP";
+  }
+});
+
+// ===== RESET =====
+window.resetBel = function () {
+  set(belRef, { status: "siap" });
+};
+
+// ===== FULLSCREEN =====
+window.fullscreen = function () {
   document.documentElement.requestFullscreen();
-}
+};
 </script>
+
 
 </body>
 </html>
