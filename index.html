@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Bel CCA</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1 { font-size: 36px; }
+  h2 { margin-top: 10px; }
+
+  select, input {
+    padding: 8px;
+    margin: 5px;
+    font-size: 16px;
+  }
+
+  button {
+    font-size: 22px;
+    padding: 20px;
+    margin: 10px;
+    width: 220px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .tim-btn { background: #22c55e; color: black; }
+  .lock { opacity: 0.4; pointer-events: none; }
+
+  #tombol {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    justify-items: center;
+    margin-top: 20px;
+  }
+
+  .control {
+    margin-bottom: 15px;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>🔔 BEL CCA</h1>
+
+<div class="control">
+  <label>Jumlah Tim:</label>
+  <select id="jumlah">
+    <option value="2">2 Tim</option>
+    <option value="3">3 Tim</option>
+    <option value="4">4 Tim</option>
+  </select>
+</div>
+
+<div class="control">
+  <input id="t1" placeholder="Tim A">
+  <input id="t2" placeholder="Tim B">
+  <input id="t3" placeholder="Tim C">
+  <input id="t4" placeholder="Tim D">
+</div>
+
+<button onclick="mulai()">MULAI</button>
+<button onclick="fullscreen()">FULLSCREEN</button>
+
+<hr>
+
+<h2 id="status">SIAP</h2>
+
+<div id="tombol"></div>
+
+<br>
+<button onclick="resetBel()">RESET</button>
+
+<audio id="sound">
+  <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">
+</audio>
+
+<script>
+let terkunci = false;
+
+function mulai() {
+  terkunci = false;
+  document.getElementById("status").innerText = "SIAP";
+
+  const jml = Number(document.getElementById("jumlah").value);
+  const namaTim = [
+    document.getElementById("t1").value || "Tim A",
+    document.getElementById("t2").value || "Tim B",
+    document.getElementById("t3").value || "Tim C",
+    document.getElementById("t4").value || "Tim D"
+  ];
+
+  const area = document.getElementById("tombol");
+  area.innerHTML = "";
+
+  for (let i = 0; i < jml; i++) {
+    const btn = document.createElement("button");
+    btn.className = "tim-btn";
+    btn.innerText = namaTim[i];
+    btn.onclick = () => tekan(namaTim[i], btn);
+    area.appendChild(btn);
+  }
+}
+
+function tekan(nama, btn) {
+  if (terkunci) return;
+  terkunci = true;
+
+  document.getElementById("sound").play();
+  document.getElementById("status").innerText =
+    nama + " MENEKAN BEL";
+
+  document.querySelectorAll(".tim-btn")
+    .forEach(b => {
+      if (b !== btn) b.classList.add("lock");
+    });
+}
+
+function resetBel() {
+  terkunci = false;
+  document.getElementById("status").innerText = "SIAP";
+  document.querySelectorAll(".tim-btn")
+    .forEach(b => b.classList.remove("lock"));
+}
+
+function fullscreen() {
+  document.documentElement.requestFullscreen();
+}
+</script>
+
+</body>
+</html>
